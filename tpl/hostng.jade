@@ -18,6 +18,38 @@ html(ng-app)
 						ng-value="phase"
 						ng-click="changePhase(phase)") {{phase}}
 				p
+				div
+					button(
+						class='btn btn-danger'
+						ng-show="gameState.phase == gameState.phaseOpt.LOCK"  
+						ng-click="resetAnswers()") ResetAnswers
+					button(
+						class='btn btn-success' 
+						ng-show="gameState.phase == gameState.phaseOpt.TIMED" 
+						ng-click="startTimer()") StartTimer
+
+
+
+					button(
+						class='btn btn-danger' 
+						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
+						ng-click="rapid({player:{username:gameState.hot_player}, points:-10, reward:false})") Punish
+
+					button(
+						class='btn btn-success'
+						ng-show="gameState.phase == gameState.phaseOpt.RAPID"  
+						ng-click="rapid({player:{username:gameState.hot_player}, points:20, reward:true})") Reward
+					button(
+						class='btn btn-default' 
+						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
+						ng-click="rapid({player:{username:gameState.hot_player}, points:0, reward:null})") Next
+
+
+
+				div 
+
+
+				p
 				div(class='btn-group')
 					H3 Round {{gameState.round}}
 					button(ng-repeat="round in gameState.rounds" 
@@ -25,6 +57,8 @@ html(ng-app)
 						class="btn btn-default" 
 						ng-value="round"
 						ng-click="changeRound(round)") {{round}}
+
+
 				p
 				div(class='btn-group')
 					H3 Hot Seat: {{gameState.hot_player}}
@@ -77,7 +111,8 @@ html(ng-app)
 
 			div(class="col-md-2")
 				H4 Powered by:
-				img(src='img/Buzzerd-logo.png', width="100", height="80")
+				a(href="https://github.com/swachi/buzzerd")
+					img(src='img/Buzzerd-logo.png', width="100", height="80")
 				p (c) Wachi 2014
 			div(class="col-md-10")
 				p phase {{gameState.phase}}

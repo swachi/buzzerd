@@ -1,6 +1,6 @@
 var express = require ("express");
 var app = express ();
-var port = 9666;
+var port = 6222; //9666;
 var WatchJS = require("watchjs")
 var watch = WatchJS.watch;
 var unwatch = WatchJS.unwatch;
@@ -30,7 +30,7 @@ var log = function(x){ console.log(x)};
 const REGISTER = "REGISTER"
 const TIMED    = "TIMED"
 const LOCK     = "LOCK"
-const RELEASE  = "RELEASE"
+const RAPID    = "RAPID"
 const END      = "END"
 
 var gameState = null;
@@ -38,7 +38,7 @@ var gameState = null;
 var resetGame = function(){
 
 	gameState = {
-		game_title:"",
+		game_title:"Buzzerd",
 		host:null,
 		players:[],
 		scores:{},
@@ -46,7 +46,7 @@ var resetGame = function(){
 		phase:REGISTER,
 		round:1,
 		clientAnswers:{},
-		phase_options:[REGISTER,TIMED, LOCK,RELEASE,END],
+		phase_options:[REGISTER,TIMED, LOCK,RAPID,END],
 		phaseOpt:{}, // will be filled below
 		score_buttons: [-20,-10,-5,5,10,20],
 		rounds:[1,2,3],
@@ -84,6 +84,9 @@ watch(gameState, "players", function(){
 })
 
 
+var soundBuzzer = function(){io.sockets.emit('soundBuzzer', {});}
+var soundDing = function(){io.sockets.emit('soundDing', {});}
+var soundDingDong = function(){io.sockets.emit('soundDingDong', {});}
 
 
 var ioResponseRegistry = {}
@@ -105,6 +108,23 @@ var clearPlayer = function(){
 var removePlayer = function(player){
 	
 }
+
+
+var addToHotseats = function (player){
+	// ignore if it's already in hot_seats
+	for(var i=0;i<gameState.hot_seats.length;i++){
+		if(gameState.hot_seats[i].username==player.username){
+			return false;
+		}
+	}
+	gameState.hot_seats.push(player);
+	return true
+
+
+}
+
+
+
 
 
 var userNames = function(){
@@ -161,12 +181,28 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('addPoints', function(data){
 		log("addPoints"+ JSON.stringify(data))
+		if(data.player.username===null){
+			log("addPoints: data")
+
+
+		}else{
 			var playerName = data.player.username
 			var newscore = gameState.scores[playerName] + data.points
 
 			log("pl:"+playerName+" "+data.points)
 			gameState.scores[playerName] = newscore;
+
+			if(gameState.phase==gameState.phaseOpt.RAPID){
+				if(data.reward==true){
+					soundDingDong()
+				}
+				else{
+					soundBuzzer()
+				}
+			}
+
 			updateGame();
+		}
 	});
 
 	socket.on('change_phase', function(data){
@@ -184,15 +220,33 @@ io.sockets.on('connection', function (socket) {
 		updateGame();
 	});
 
+	
+	socket.on('resetAnswers', function(data){
+		gameState.hot_player = null;
+		gameState.answerBoards= {}
+		gameState.hot_seats = []
+		// gameState.updateGame();
+		updateGame();
+	});
 
 
 	socket.on('resetGame', function(){resetGame();updateGame();})
 
 	socket.on('buzzer', function(data){
-		gameState.hot_seats.push(data);
-		gameState.answerBoards[data.username] = data.answer
+		// gameState.hot_seats.push(data);
+		if (addToHotseats(data)==true){
+			soundDing()
+			log("buzzer");
+			gameState.answerBoards[data.username] = data.answer
+		}
+
+
 		updateGame();
 	})
+
+
+
+
 
 })
 

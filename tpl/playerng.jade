@@ -28,7 +28,8 @@ html(ng-app)
 						p.
 						input(type='submit', class='btn btn-default' value='Register')
 
-			div(ng-hide="gameState.phase == gameState.phaseOpt.REGISTER")
+			div(ng-hide="gameState.phase == gameState.phaseOpt.REGISTER" 
+				class="well well-default")
 				h3 Answer Form
 				input(class='form-control' 
 					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK"
@@ -40,7 +41,8 @@ html(ng-app)
 
 			div(class="col-md-2")
 				H4 Powered by:
-				img(src='img/Buzzerd-logo.png', width="100", height="80")
+				a(href="https://github.com/swachi/buzzerd")
+					img(src='img/Buzzerd-logo.png', width="100", height="80")
 				p (c) Wachi 2014
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')

@@ -37,10 +37,20 @@ function AppCtrl($scope){
 		socket.emit("change_round", {round:round});
 	}
 
+	$scope.resetAnswers = function(){
+		socket.emit("resetAnswers", {})
+	}
 
 	$scope.changeHotseat = function(data) {
 		socket.emit("change_hotseat", data);
 	}
+
+
+	$scope.rapid = function(data){
+		socket.emit("addPoints",data);
+		socket.emit("resetAnswers",{});
+	};
+
 
 	$scope.resetGame = function(){
 		socket.emit("resetGame", {});

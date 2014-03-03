@@ -8,12 +8,12 @@ html(ng-app)
 			div
 				H1 Team: {{username}}
 				H5 Members: {{members}}
-				H3 Score: {{score}}
+				H3 Score: {{gameState.scores[username]}}
 
 
-			div(id='registration_input' ng-hide="gameState.registration_lock")
+			div(id='registration_input' ng-show="gameState.phase == gameState.phaseOpt.REGISTER" class="well well-default")
 
-				h3 Team Registration Form 
+				h3 Team Registration Form
 				
 				form(ng-submit="sendUsername()")
 					div(class='form-horizontal')
@@ -28,13 +28,20 @@ html(ng-app)
 						p.
 						input(type='submit', class='btn btn-default' value='Register')
 
-			h3 Answer Form
-			input(class='form-control' type='text', size='100' ng-model='answer' placeholder='enter answer here')
+			div(ng-hide="gameState.phase == gameState.phaseOpt.REGISTER")
+				h3 Answer Form
+				input(class='form-control' 
+					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK"
+					type='text', size='100' ng-model='answer' placeholder='enter answer here')
+				p
+				input(ng-click="buzzer({username:username, answer:answer})" 
+					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK"
+					class='btn btn-default' type='button' value="buzzer") 
 
-			h3 Lock-Out Buzzer
-			input(ng-click="buzzer()" class='btn btn-default' type='button' value="buzzer") 
-
-
+			div(class="col-md-2")
+				H4 Powered by:
+				img(src='img/Buzzerd-logo.png', width="100", height="80")
+				p (c) Wachi 2014
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
 		script(src='/socket.io/socket.io.js')

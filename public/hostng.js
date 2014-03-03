@@ -28,16 +28,27 @@ function AppCtrl($scope){
 
 		socket.emit("addPoints", data);
 	}
-	$scope.closeReg = function(){
-		socket.emit("registration_lock", {registration_lock:true})
+
+	$scope.changePhase = function(phase){
+		socket.emit("change_phase", {phase:phase});
 	}
-	$scope.openReg = function(){
-		socket.emit("registration_lock", {registration_lock:false})
+
+	$scope.changeRound = function(round){
+		socket.emit("change_round", {round:round});
+	}
+
+
+	$scope.changeHotseat = function(data) {
+		socket.emit("change_hotseat", data);
 	}
 
 	$scope.resetGame = function(){
 		socket.emit("resetGame", {});
 	};
+
+
+
+
 
 }
 

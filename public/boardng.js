@@ -19,3 +19,4 @@ function AppCtrl($scope){
 
 	
 };
+//ng-show="player.username == gameState.hot_player"

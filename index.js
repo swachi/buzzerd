@@ -27,7 +27,7 @@ var log = function(x){ console.log(x)};
 // lock: buzzer locked
 // release: buzzer released
 // end: game ended
-const REGISTER = "REGISTRATION"
+const REGISTER = "REGISTER"
 const TIMED    = "TIMED"
 const LOCK     = "LOCK"
 const RELEASE  = "RELEASE"
@@ -36,24 +36,31 @@ const END      = "END"
 var gameState = null;
 
 var resetGame = function(){
-gameState = {
-	game_title:"",
-	host:null,
-	players:[],
-	scores:{},
-	clientPlayerDict:{},
-	phase:REGISTER,
-	round:1,
-	clientAnswers:{},
-	phase_options:[REGISTER,TIMED, LOCK,RELEASE,END],
-	registration_lock: false,
-	score_buttons: [-20,-10,-5,5,10,20],
-	rounds:[1,2,3],
-	score_recoreds: [],
-	buzzerOrder:[],
-	answerBoards:{},
 
-}
+	gameState = {
+		game_title:"",
+		host:null,
+		players:[],
+		scores:{},
+		clientPlayerDict:{},
+		phase:REGISTER,
+		round:1,
+		clientAnswers:{},
+		phase_options:[REGISTER,TIMED, LOCK,RELEASE,END],
+		phaseOpt:{}, // will be filled below
+		score_buttons: [-20,-10,-5,5,10,20],
+		rounds:[1,2,3],
+		score_recoreds: [],
+		buzzerOrder:[],
+		answerBoards:{},
+		hot_seats:[],
+		hot_player:null,
+	}
+	//initialize phae_opt
+	for (var i=0; i < gameState.phase_options.length; i++){
+		var po = gameState.phase_options[i]
+		gameState.phaseOpt[po] = po
+	}
 };
 
 resetGame();
@@ -162,13 +169,31 @@ io.sockets.on('connection', function (socket) {
 			updateGame();
 	});
 
-	socket.on('registration_lock', function(data){
-		gameState.registration_lock = data.registration_lock;
+	socket.on('change_phase', function(data){
+		gameState.phase = data.phase;
+		updateGame();
+	});
+
+	socket.on('change_round', function(data){
+		gameState.round = data.round;
+		updateGame();
+	});
+	
+	socket.on('change_hotseat', function(data){
+		gameState.hot_player = data.hot_player;
 		updateGame();
 	});
 
 
+
 	socket.on('resetGame', function(){resetGame();updateGame();})
+
+	socket.on('buzzer', function(data){
+		gameState.hot_seats.push(data);
+		gameState.answerBoards[data.username] = data.answer
+		updateGame();
+	})
+
 })
 
 

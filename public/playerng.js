@@ -19,6 +19,10 @@ function AppCtrl($scope){
 		console.log("registering names")
 		socket.emit('registerName', {username: $scope.username, members: $scope.members})
 	}
+    $scope.buzzer = function(data){
+    	console.log("buzzer" + JSON.stringify(data))
+    	socket.emit("buzzer", data)
+    }
 
 	socket.on('message', function(e){
 		console.log(e)

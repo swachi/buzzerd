@@ -10,12 +10,30 @@ html(ng-app)
 
 			div(class="col-md-3")
 				H1 Round {{gameState.round}}
+			p
 			div(class="col-md-10")
-				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
+				div(ng-repeat="player in gameState.players" 
+					class="col-md-5" 
+					class="panel panel-danger"
+					ng-show="player.username == gameState.hot_player"
+					)
+					div(class='panel-body')
+						H4 Hot Seat
+						H3 {{player.username}}
+						
+						p Score: {{gameState.scores[player.username]}}
+						p
+						H4 Answer: 
+						H2 {{gameState.answerBoards[player.username]}}
+			div(class="col-md-10")
+				div(ng-repeat="player in gameState.players" 
+					class="col-md-5" 
+					class="panel panel-warning"
+					ng-hide="player.username == gameState.hot_player")
 					div(class='panel-body')
 						H3 {{player.username}}
-
 						p Score: {{gameState.scores[player.username]}}
+
 
 
 

@@ -1,0 +1,3 @@
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+button:focus {outline: none; }
+.well { padding-top: 30px;}

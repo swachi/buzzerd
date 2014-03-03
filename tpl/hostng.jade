@@ -1,0 +1,48 @@
+doctype html
+html(ng-app)
+	head
+		title BuzzerdHost
+		link(rel='stylesheet', href='/css/bootstrap.min.css')
+	body
+		div(ng-controller='AppCtrl', class="col-md-12" )
+			H1 Host Controller
+			
+			div(id='phase_input' class="col-md-12" class="panel panel-default")
+
+				H3 Current Phase: {{gameState.phase}}
+
+				div(class='btn-group')
+					button(ng-repeat="phase in gameState.phase_options" 
+						type="button" 
+						class="btn btn-default" 
+						ng-value="phase") {{phase}}
+				p
+
+			div(class="col-md-12")
+				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
+					div(class='panel-body-sm')
+						H5 Team: {{player.username}} 
+						H5 Members: {{player.members}}
+
+
+						div(class='well well-default')
+							p Score: {{ gameState.scores[player.username] }}
+
+							div(class='btn-group')
+								button(ng-repeat="score in gameState.score_buttons"
+									ng-click="addPoints({player:player, points:score})"
+									type="button"
+									class="btn btn-default"
+									ng-value='score') {{score}}
+
+		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
+		script(src='/js/ui-bootstrap-tpls-0.10.0.js')
+		script(src='/socket.io/socket.io.js')
+		script(src='/js/app.js')
+		script(src='/services.js')
+		script(src='/js/filters.js')
+		script(src='/js/directives.js')
+		script(src='/hostng.js')
+
+
+

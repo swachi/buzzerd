@@ -1,0 +1,45 @@
+doctype html
+html(ng-app)
+	head
+		title BuzzerdPlayer
+		link(rel='stylesheet', href='/css/bootstrap.min.css')
+	body
+		div(ng-controller='AppCtrl', class="col-md-12")
+			div
+				H1 Team: {{username}}
+				H5 Members: {{members}}
+				H3 Score: {{score}}
+
+
+			div(id='registration_input')
+
+				h3 Team Registration Form 
+				
+				form(ng-submit="sendUsername()")
+					div(class='form-horizontal')
+						div(class='form-group')
+							label(for='teamName' class="col-sm-2 control-label") Team Name:
+							div(class="col-sm-8")
+								input(id='teamName' class='form-control' type='text', size='60' ng-model='username' placeholder='enter team name')
+						div(class='form-group')
+							label(for='memberNames' class="col-sm-2 control-label") Member(s):
+							div(class="col-sm-8")
+								input(id='memberNames' class='form-control' type='text', size='100' ng-model='members' placeholder='enter member name(s)')
+						p.
+						input(type='submit', class='btn btn-default' value='Register')
+
+			h3 Answer Form
+			input(class='form-control' type='text', size='100' ng-model='answer' placeholder='enter answer here')
+
+			h3 Lock-Out Buzzer
+			input(ng-click="buzzer()" class='btn btn-default' type='button' value="buzzer") 
+
+
+
+		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
+		script(src='/socket.io/socket.io.js')
+		script(src='/js/app.js')
+		script(src='/services.js')
+		script(src='/js/filters.js')
+		script(src='/js/directives.js')
+		script(src='/playerng.js')

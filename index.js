@@ -28,6 +28,7 @@ var log = function(x){ console.log(x)};
 // release: buzzer released
 // end: game ended
 const REGISTER = "REGISTRATION"
+const TIMED    = "TIMED"
 const LOCK     = "LOCK"
 const RELEASE  = "RELEASE"
 const END      = "END"
@@ -36,6 +37,7 @@ var gameState = null;
 
 var resetGame = function(){
 gameState = {
+	game_title:"",
 	host:null,
 	players:[],
 	scores:{},
@@ -43,29 +45,39 @@ gameState = {
 	phase:REGISTER,
 	round:1,
 	clientAnswers:{},
-	phase_options:[REGISTER,LOCK,RELEASE,END],
+	phase_options:[REGISTER,TIMED, LOCK,RELEASE,END],
+	registration_lock: false,
 	score_buttons: [-20,-10,-5,5,10,20],
-	score_recoreds: []
+	rounds:[1,2,3],
+	score_recoreds: [],
+	buzzerOrder:[],
+	answerBoards:{},
 
 }
 };
 
-resetGame()
-
+resetGame();
 
 var io = require('socket.io').listen(app.listen(port));
 
+
+var updateGame = function(){
+	io.sockets.emit('gameState',  gameState);
+}
 watch(gameState, function(){
 	log("some attribute changed!")
-	io.sockets.emit('gameState',  gameState);
+	updateGame();
 		
 });
 
 watch(gameState, "players", function(){
 	log("players attribute changed!!")
-io.sockets.emit('gameState', gameState);
+	updateGame();
 	
 })
+
+
+
 
 var ioResponseRegistry = {}
 
@@ -95,38 +107,6 @@ var userNames = function(){
 }
 
 
-
-io.sockets.on('connection', function (socket) {
-	console.log("connected to id"+socket.id)
-	console.log("ip is" +socket.handshake.address.address)
-
-	var player = null;
-
-	socket.emit('message', {message: 'Connection to Buzzerd Server established.'});
-
-	io.sockets.emit('gameState', gameState);
-
-	socket.on('registerName', function(data){
-		console.log ("registerName "+ JSON.stringify(data));
-		if (data.username){
-			gameState.clientPlayerDict[socket.id] = data;
-			refreshPlayerReg();
-		}
-	})
-
-	socket.on('addPoints', function(data){
-		log("addPoints"+ JSON.stringify(data))
-			var playerName = data.player.username
-			var newscore = gameState.scores[playerName] + data.points
-
-			log("pl:"+playerName+" "+data.points)
-			gameState.scores[playerName] = newscore;
-			io.sockets.emit('gameState',  gameState);
-	})
-
-})
-
-
 var refreshPlayerReg = function(){
 	log("refreshing")
 	var players = []
@@ -152,6 +132,48 @@ var refreshPlayerReg = function(){
 
 
 }
+
+io.sockets.on('connection', function (socket) {
+	console.log("connected to id"+socket.id)
+	console.log("ip is" +socket.handshake.address.address)
+
+	var player = null;
+
+	socket.emit('message', {message: 'Connection to Buzzerd Server established.'});
+
+	io.sockets.emit('gameState', gameState);
+
+	socket.on('registerName', function(data){
+		console.log ("registerName "+ JSON.stringify(data));
+		if (data.username){
+			gameState.clientPlayerDict[socket.id] = data;
+			refreshPlayerReg();
+		}
+		updateGame();
+	})
+
+	socket.on('addPoints', function(data){
+		log("addPoints"+ JSON.stringify(data))
+			var playerName = data.player.username
+			var newscore = gameState.scores[playerName] + data.points
+
+			log("pl:"+playerName+" "+data.points)
+			gameState.scores[playerName] = newscore;
+			updateGame();
+	});
+
+	socket.on('registration_lock', function(data){
+		gameState.registration_lock = data.registration_lock;
+		updateGame();
+	});
+
+
+	socket.on('resetGame', function(){resetGame();updateGame();})
+})
+
+
+
+// setInterval(function(){console.log("tick"), 1000});
 
 
 

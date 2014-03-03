@@ -7,7 +7,8 @@ html(ng-app)
 
 	body
 		div(ng-controller='AppCtrl', class="col-md-12")
-			div(class="col-md-10")
+
+			div(class="col-md-3")
 				H1 Round {{gameState.round}}
 			div(class="col-md-10")
 				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
@@ -17,11 +18,11 @@ html(ng-app)
 						p Score: {{gameState.scores[player.username]}}
 
 
-			div(class="col-md-10")
-				p phase {{gameState.phase}}
-				p players {{gameState.players}}
-				p clientPlayerDict {{gameState.clientPlayerDict}}
-				p gamestate {{gameState}}
+
+			div(class="col-md-2")
+				H4 Powered by:
+				img(src='img/Buzzerd-logo.png', width="100", height="80")
+				p (c) Wachi 2014
 
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')

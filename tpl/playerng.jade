@@ -11,7 +11,7 @@ html(ng-app)
 				H3 Score: {{score}}
 
 
-			div(id='registration_input')
+			div(id='registration_input' ng-hide="gameState.registration_lock")
 
 				h3 Team Registration Form 
 				

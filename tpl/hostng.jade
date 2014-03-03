@@ -17,6 +17,9 @@ html(ng-app)
 						class="btn btn-default" 
 						ng-value="phase") {{phase}}
 				p
+				button(ng-hide="gameState.registration_lock" class="btn btn-warning" ng-click="closeReg()" type="button" ) End Registration
+				button(ng-show="gameState.registration_lock" class="btn btn-danger" ng-click="openReg()" type="button" ) Open Registration
+				p
 
 			div(class="col-md-12")
 				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
@@ -34,6 +37,16 @@ html(ng-app)
 									type="button"
 									class="btn btn-default"
 									ng-value='score') {{score}}
+
+
+			div(class="col-md-10")
+				p phase {{gameState.phase}}
+				p players {{gameState.players}}
+				p clientPlayerDict {{gameState.clientPlayerDict}}
+				p gamestate {{gameState}}
+
+			button(class="btn btn-danger" ng-click="resetGame()" type="button" ) reset game
+
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
 		script(src='/js/ui-bootstrap-tpls-0.10.0.js')

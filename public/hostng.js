@@ -6,6 +6,8 @@ var socket = io.connect()//'http://localhost:9666')
 var username = 'tempuser'
 
 var log = function(x){console.log(x)}
+
+
 log('entering appctrl')
 function AppCtrl($scope){
 	$scope.messages = []
@@ -26,4 +28,22 @@ function AppCtrl($scope){
 
 		socket.emit("addPoints", data);
 	}
+	$scope.closeReg = function(){
+		socket.emit("registration_lock", {registration_lock:true})
+	}
+	$scope.openReg = function(){
+		socket.emit("registration_lock", {registration_lock:false})
+	}
+
+	$scope.resetGame = function(){
+		socket.emit("resetGame", {});
+	};
+
 }
+
+
+
+
+
+
+

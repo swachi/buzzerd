@@ -11,33 +11,27 @@ html(ng-app)
 				H1 {{gameState.game_title}}
 				H2 Round {{gameState.round}}
 				p
+				H4 
+					label(class="label label-success") Reward: {{gameState.points.reward}}
+				H4 
+					label(class="label label-danger" ) Penalty: {{gameState.points.penalty}}
+				p
 				p. hot seat
 				button(ng-repeat="hot_seat in gameState.hot_alive" 
 				type="button" 
 				class="btn btn-default" 
 				ng-value="hot_seat"
-				ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
+				) {{hot_seat}}
 				p
 
-			div(class="col-md-12")
-				div(class="col-md-10" id="hotSeat" ng-show='gameState.phase == gameState.phaseOpt.RAPID')
-					div(ng-repeat="player in gameState.players" 
-						class="col-md-5" 
-						class="panel panel-danger"
-						ng-show="player.username == gameState.hot_player"
-						)
-						div(class='panel-body')
-							H4 {{player.username}}
-							H5 {{player.members}}
-							p Score: {{gameState.scores[player.username]}}
-							p
 							
 			div(class="col-md-12")
 				div(ng-repeat="player in gameState.players" 
 					class="col-md-6" 
-					class="panel panel-default"
-					ng-hide="player.username == gameState.hot_player")
+					class="panel panel-default")
 					div(class='panel-body-sm')
+						H1 
+							label(class="label label-warning" ng-show="player.username == gameState.hot_alive[0]") HOT SEAT
 						H4 {{player.username}}
 						H5 {{player.members}}
 						div(ng-show='gameState.phase == gameState.phaseOpt.SHOW')

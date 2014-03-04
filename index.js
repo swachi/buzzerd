@@ -40,6 +40,7 @@ var resetGame = function(){
 	gameState = {
 		game_title:"Buzzerd",
 		host:null,
+		points:{penalty:0,reward:10},
 		players:[],
 		scores:{},
 		clientPlayerDict:{},
@@ -186,7 +187,7 @@ io.sockets.on('connection', function (socket) {
 			log("pl:"+playerName+" "+data.points)
 			gameState.scores[playerName] = newscore;
 
-			if(gameState.phase==gameState.phaseOpt.RAPID){
+			if(gameState.phase==gameState.phaseOpt.RAPID || gameState.phase==gameState.phaseOpt.SHOW){
 				if(data.reward==true){	
 					soundDingDong();
 
@@ -208,6 +209,11 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('change_round', function(data){
 		gameState.round = data.round;
+		updateGame();
+	});
+
+	socket.on('setPoints', function(data){
+		gameState.points = data;
 		updateGame();
 	});
 	
@@ -247,6 +253,16 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('sendAnswer', function(data){
 		gameState.answerBoards[data.username] = data.answer
+		updateGame();
+	})
+	
+	socket.on('putAllToQueue', function(data){
+		soundDing()
+		gameState.answerBoards[data.username] = data.answer
+		// TODO: use iteration and use addToHotseats
+		for(var i=0;i<gameState.players.length;i++){
+			addToHotseats(gameState.players[i]);
+		}
 		updateGame();
 	})
 })

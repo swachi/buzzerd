@@ -56,6 +56,13 @@ function AppCtrl($scope){
 		socket.emit("resetGame", {});
 	};
 
+	$scope.sendPoints = function(data){
+		socket.emit("setPoints",data)
+	}
+
+	$scope.putAllToQueue = function(){
+		socket.emit("putAllToQueue",{})
+	}
 
 
 

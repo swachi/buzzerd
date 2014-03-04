@@ -3,7 +3,6 @@ html(ng-app)
 	head
 		title BuzzerdBoard
 		link(rel='stylesheet', href='/css/bootstrap.min.css')
-		link(rel='stylesheet', href='/css/bootfix.css')
 
 	body
 		div(ng-controller='AppCtrl', class="col-md-12")
@@ -11,35 +10,45 @@ html(ng-app)
 			div(class="col-md-3")
 				H1 {{gameState.game_title}}
 				H2 Round {{gameState.round}}
-			p
-			div(class="col-md-12 well well-default")
-				div(class="col-md-10")
+				p
+				p. hot seat
+				button(ng-repeat="hot_seat in gameState.hot_alive" 
+				type="button" 
+				class="btn btn-default" 
+				ng-value="hot_seat"
+				ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
+				p
+
+			div(class="col-md-12")
+				div(class="col-md-10" id="hotSeat" ng-show='gameState.phase == gameState.phaseOpt.RAPID')
 					div(ng-repeat="player in gameState.players" 
 						class="col-md-5" 
 						class="panel panel-danger"
 						ng-show="player.username == gameState.hot_player"
-						style="background-color: orange"
 						)
 						div(class='panel-body')
-							H4 Hot Seat
-							H3 {{player.username}}
+							H4 {{player.username}}
 							H5 {{player.members}}
-							
 							p Score: {{gameState.scores[player.username]}}
 							p
+							
+			div(class="col-md-12")
+				div(ng-repeat="player in gameState.players" 
+					class="col-md-6" 
+					class="panel panel-default"
+					ng-hide="player.username == gameState.hot_player")
+					div(class='panel-body-sm')
+						H4 {{player.username}}
+						H5 {{player.members}}
+						div(ng-show='gameState.phase == gameState.phaseOpt.SHOW')
+							p 
 							H4 Answer: 
 							H2 {{gameState.answerBoards[player.username]}}
-				div(class="col-md-10")
-					div(ng-repeat="player in gameState.players" 
-						class="col-md-5" 
-						class="panel panel-warning"
-						ng-hide="player.username == gameState.hot_player")
-						div(class='panel-body')
-							H2 {{player.username}}
-							H5 {{player.members}}
-							H2
-								span Score
-								span : {{gameState.scores[player.username]}}
+							p
+						H3
+							span Score
+							span : {{gameState.scores[player.username]}}
+
 
 			div(class="col-md-2")
 				H4 Powered by:
@@ -50,6 +59,7 @@ html(ng-app)
 
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
+		script(src='/js/ui-bootstrap-tpls-0.10.0.js')
 		script(src='/socket.io/socket.io.js')
 		script(src='/js/app.js')
 		script(src='/services.js')

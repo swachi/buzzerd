@@ -55,21 +55,6 @@ window.onload = function(){
 		}
 	}	
 
-	socket.on('message', function (data) {
-		if(data.message) {
-			console.log(""+sendButton)
-			messages.push(data);
-			var html = ''//<p>&#x2665</p>'
-			for(var i=0; i<messages.length; i++){
-				html += '<b>' + (messages[i].username ? messages[i].username : 'Server') + ': </b>';
-				html += messages[i].message + '<br />';
-			}
-			content.innerHTML = html;
-		}else{
-			console.log("there is a problem:", data);
-		}
-	});
-
 
 	socket.on('enable_register', function(data){
 		modes.REGISTER.init()
@@ -82,20 +67,15 @@ window.onload = function(){
 
 	});
 
-	socket.on('enable_')
+	
+	socket.on('clearPlayerAnswers', function(data){
+		$scope.answer = "df";
+		$scope.$apply();
+		log("clear?")
+	});
 
 
-	sendButton.onclick = sendMessage =  function(){ 
-		console.log("onclick -" + sendButton)
-		if(name.value == "") {
-			alert ("please type your name!");
 
-		}else {
-			var text = field.value;
-			socket.emit('send', {message: text, username: name.value});
-			field.value= "";
-		}
-	};
 }
 
 $(document).ready(function() {

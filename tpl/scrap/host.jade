@@ -15,3 +15,11 @@ html
 			br
 			input#field(style='width:350px;')
 			input#send(type='button', value='send')
+				H3 Hot Seat: {{gameState.hot_alive[0]}}
+					button(ng-repeat="username in gameState.hot_seats" 
+						type="button" 
+						class="btn btn-default" 
+						ng-value="username"
+						ng-click="changeHotseat({hot_player:username})") {{username}}
+					button(ng-click="changeHotseat('')" class="btn btn-good") NoOne
+				p

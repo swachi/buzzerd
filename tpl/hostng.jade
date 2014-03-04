@@ -8,7 +8,14 @@ html(ng-app)
 			H1 Host Controller
 			
 			div(id='phase_input' class="col-md-12" class="panel panel-default")
-
+				div(class='btn-group')
+					H3 Round {{gameState.round}}
+					button(ng-repeat="round in gameState.rounds" 
+						type="button" 
+						class="btn btn-default" 
+						ng-value="round"
+						ng-click="changeRound(round)") {{round}}
+				p
 				H3 Current Phase: {{gameState.phase}}
 
 				div(class='btn-group')
@@ -21,7 +28,7 @@ html(ng-app)
 				div
 					button(
 						class='btn btn-danger'
-						ng-show="gameState.phase == gameState.phaseOpt.LOCK"  
+						ng-show="gameState.phase == gameState.phaseOpt.SHOW"  
 						ng-click="resetAnswers()") ResetAnswers
 					button(
 						class='btn btn-success' 
@@ -33,16 +40,16 @@ html(ng-app)
 					button(
 						class='btn btn-danger' 
 						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
-						ng-click="rapid({player:{username:gameState.hot_player}, points:-10, reward:false})") Punish
+						ng-click="rapid({player:{username:gameState.hot_alive[0]}, points:-10, reward:false})") Punish
 
 					button(
 						class='btn btn-success'
 						ng-show="gameState.phase == gameState.phaseOpt.RAPID"  
-						ng-click="rapid({player:{username:gameState.hot_player}, points:20, reward:true})") Reward
+						ng-click="rapid({player:{username:gameState.hot_alive[0]}, points:20, reward:true})") Reward
 					button(
 						class='btn btn-default' 
 						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
-						ng-click="rapid({player:{username:gameState.hot_player}, points:0, reward:null})") Next
+						ng-click="resetAnswers()") Next
 
 
 
@@ -50,34 +57,36 @@ html(ng-app)
 
 
 				p
-				div(class='btn-group')
-					H3 Round {{gameState.round}}
-					button(ng-repeat="round in gameState.rounds" 
-						type="button" 
-						class="btn btn-default" 
-						ng-value="round"
-						ng-click="changeRound(round)") {{round}}
 
-
-				p
-				div(class='btn-group')
-					H3 Hot Seat: {{gameState.hot_player}}
-					button(ng-repeat="hot_seat in gameState.hot_seats" 
+				
+			H3 Hot Seat: {{gameState.hot_alive[0]}}
+			button(ng-repeat="hot_seat in gameState.hot_seats" 
 						type="button" 
 						class="btn btn-default" 
 						ng-value="hot_seat"
-						ng-click="changeHotseat({hot_player:hot_seat.username})") {{hot_seat.username}}
+						ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
 					button(ng-click="changeHotseat('')" class="btn btn-good") NoOne
 				p
+			button(ng-repeat="hot_seat in gameState.hot_alive" 
+						type="button" 
+						class="btn btn-default" 
+						ng-value="hot_seat"
+						ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
+
+
+
 
 			div(class="col-md-12")
 				H3 Hot Seat
 				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
-					div(class='panel-body-sm' ng-show="player.username == gameState.hot_player")
+					div(class='panel-body-sm' ng-show="gameState.hot_player.indexOf(player.username) >= 0")
 						H5 Team: {{player.username}} 
 						H5 Members: {{player.members}}
 
-
+						p 
+						H4 Answer: 
+						H2 {{gameState.answerBoards[player.username]}}
+						p
 						div(class='well well-default')
 							p Score: {{ gameState.scores[player.username] }}
 
@@ -93,7 +102,10 @@ html(ng-app)
 					div(class='panel-body-sm')
 						H5 Team: {{player.username}} 
 						H5 Members: {{player.members}}
-
+						p 
+						H4 Answer: 
+						H2 {{gameState.answerBoards[player.username]}}
+						p
 
 						div(class='well well-default')
 							p Score: {{ gameState.scores[player.username] }}
@@ -118,6 +130,7 @@ html(ng-app)
 				p phase {{gameState.phase}}
 				p players {{gameState.players}}
 				p clientPlayerDict {{gameState.clientPlayerDict}}
+				p answerboards  {{gameState.answerBoards}}
 				p gamestate {{gameState}}
 			button(class="btn btn-danger" ng-click="resetGame()" type="button" ) reset game
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
@@ -128,6 +141,5 @@ html(ng-app)
 		script(src='/js/filters.js')
 		script(src='/js/directives.js')
 		script(src='/hostng.js')
-
 
 

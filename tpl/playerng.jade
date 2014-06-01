@@ -13,45 +13,36 @@ html(ng-app)
 
 			div(id='registration_input' ng-show="gameState.phase == gameState.phaseOpt.REGISTER" class="well well-default")
 
-				h3 Registration
+				h3 Team Registration Form
 				
 				form(ng-submit="sendUsername()")
 					div(class='form-horizontal')
 						div(class='form-group')
 							label(for='teamName' class="col-sm-2 control-label") Team Name:
 							div(class="col-sm-8")
-								input(
-									ng-change="sendUsername()"
-									id='teamName' 
-									class='form-control' type='text', size='60' ng-model='username' placeholder='enter team name')
+								input(id='teamName' class='form-control' type='text', size='60' ng-model='username' placeholder='enter team name')
 						div(class='form-group')
 							label(for='memberNames' class="col-sm-2 control-label") Member(s):
 							div(class="col-sm-8")
-								input(ng-change="sendUsername()"
-									id='memberNames' class='form-control' type='text', size='100' ng-model='members' placeholder='enter member name(s)')
+								input(id='memberNames' class='form-control' type='text', size='100' ng-model='members' placeholder='enter member name(s)')
 						p.
-						
 						input(type='submit', class='btn btn-default' value='Register')
 
-			div(ng-hide="gameState.phase == gameState.phaseOpt.REGISTER")
-				h3 Answer
+			div(ng-hide="gameState.phase == gameState.phaseOpt.REGISTER" 
+				class="well well-default")
+				h3 Answer Form
 				input(class='form-control' 
-					ng-hide="gameState.phase == gameState.phaseOpt.RAPID"
-					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK || gameState.phase == gameState.phaseOpt.SHOW"
-					type='text', size='100' ng-model='playerAnswer' placeholder='enter answer here'
-					ng-change="sendAnswer({username:username, answer:playerAnswer})"
-					)
+					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK"
+					type='text', size='100' ng-model='answer' placeholder='enter answer here')
 				p
 				input(ng-click="buzzer({username:username, answer:answer})" 
-					ng-show="gameState.phase == gameState.phaseOpt.RAPID"
-					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK || gameState.phase == gameState.phaseOpt.SHOW"
+					ng-disabled="gameState.phase == gameState.phaseOpt.LOCK"
 					class='btn btn-default' type='button' value="buzzer") 
-
-				p
 
 			div(class="col-md-2")
 				H4 Powered by:
-				img(src='img/Buzzerd-logo.png', width="100", height="80")
+				a(href="https://github.com/swachi/buzzerd")
+					img(src='img/Buzzerd-logo.png', width="100", height="80")
 				p (c) Wachi 2014
 
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')

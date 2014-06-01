@@ -31,7 +31,7 @@ const REGISTER = "REGISTER"
 const TIMED    = "TIMED"
 const LOCK     = "LOCK"
 const RAPID    = "RAPID"
-const SHOW      = "SHOW"
+const END      = "END"
 
 var gameState = null;
 
@@ -40,25 +40,23 @@ var resetGame = function(){
 	gameState = {
 		game_title:"Buzzerd",
 		host:null,
-		points:{penalty:0,reward:10},
 		players:[],
 		scores:{},
 		clientPlayerDict:{},
 		phase:REGISTER,
 		round:1,
 		clientAnswers:{},
-		phase_options:[REGISTER,TIMED, LOCK,RAPID,SHOW],
+		phase_options:[REGISTER,TIMED, LOCK,RAPID,END],
 		phaseOpt:{}, // will be filled below
 		score_buttons: [-20,-10,-5,5,10,20],
 		rounds:[1,2,3],
 		score_recoreds: [],
 		buzzerOrder:[],
 		answerBoards:{},
-		hot_seats:[], // determines who pressed the buzzer and in what order
-		hot_alive:[], // replaces hot_player - this keeps track of who in hot seat is alive
-		countdownTimer:0,
+		hot_seats:[],
+		hot_player:null,
 	}
-	//initialize phae_opt
+	//initialize phase_opt
 	for (var i=0; i < gameState.phase_options.length; i++){
 		var po = gameState.phase_options[i]
 		gameState.phaseOpt[po] = po
@@ -86,9 +84,6 @@ watch(gameState, "players", function(){
 })
 
 
-var soundBuzzer = function(){io.sockets.emit('soundBuzzer', {});}
-var soundDing = function(){io.sockets.emit('soundDing', {});}
-var soundDingDong = function(){io.sockets.emit('soundDingDong', {});}
 
 
 var ioResponseRegistry = {}
@@ -101,22 +96,15 @@ var ioResponse = function(x){
 //////////////////////////////////////////////////////////
 // Game logic:
 
-
-
-
-var addToHotseats = function (player){
-	// ignore if it's already in hot_seats
-	for(var i=0;i<gameState.hot_seats.length;i++){
-		if(gameState.hot_seats[i]==player.username){
-			return false;
-		}
-	}
-	gameState.hot_seats.push(player.username);
-	gameState.hot_alive.push(player.username);
-	return true
-
+var addPlayer = function(player){
+	gameState.players.push(player);
 }
-
+var clearPlayer = function(){
+	gameState.players = []
+}
+var removePlayer = function(player){
+	
+}
 
 
 var userNames = function(){
@@ -128,9 +116,7 @@ var userNames = function(){
 
 var refreshPlayerReg = function(){
 	log("refreshing")
-
 	var players = []
-	gameState.scores = {}
 
 	for(var key in gameState.clientPlayerDict){
 		log("ref:"+key)
@@ -150,6 +136,8 @@ var refreshPlayerReg = function(){
 		}
 	}
 	gameState.players = players;
+
+
 }
 
 io.sockets.on('connection', function (socket) {
@@ -171,14 +159,10 @@ io.sockets.on('connection', function (socket) {
 		updateGame();
 	})
 
-
-	/////////POINTS////////////////////////////////////////////////////
-
 	socket.on('addPoints', function(data){
 		log("addPoints"+ JSON.stringify(data))
 		if(data.player.username===null){
 			log("addPoints: data")
-
 
 		}else{
 			var playerName = data.player.username
@@ -186,18 +170,6 @@ io.sockets.on('connection', function (socket) {
 
 			log("pl:"+playerName+" "+data.points)
 			gameState.scores[playerName] = newscore;
-
-			if(gameState.phase==gameState.phaseOpt.RAPID || gameState.phase==gameState.phaseOpt.SHOW){
-				if(data.reward==true){	
-					soundDingDong();
-
-				}
-				else{ 
-					soundBuzzer()	
-				}
-				gameState.hot_alive.shift();
-			}
-
 			updateGame();
 		}
 	});
@@ -211,60 +183,33 @@ io.sockets.on('connection', function (socket) {
 		gameState.round = data.round;
 		updateGame();
 	});
-
-	socket.on('setPoints', function(data){
-		gameState.points = data;
+	
+	socket.on('change_hotseat', function(data){
+		gameState.hot_player = data.hot_player;
 		updateGame();
 	});
-	
-	// socket.on('change_hotseat', function(data){
-	// 	gameState.hot_player = data.hot_player;
-	// 	updateGame();
-	// });
 
 	
 	socket.on('resetAnswers', function(data){
+		gameState.hot_player = null;
 		gameState.answerBoards= {}
 		gameState.hot_seats = []
-		gameState.hot_alive = []
 		// gameState.updateGame();
-		io.sockets.emit("clearPlayerAnswers", {})
-		updateGame();
-		log('answer reset')
-	});
-
-
-	socket.on('change_gametitle', function(data){
-		gameState.game_title = data.game_title;
 		updateGame();
 	});
+
 
 	socket.on('resetGame', function(){resetGame();updateGame();})
 
 	socket.on('buzzer', function(data){
-		// gameState.hot_seats.push(data);
-		if (addToHotseats(data)==true){
-			soundDing()
-			log("buzzer");
-			gameState.answerBoards[data.username] = data.answer
-		}
+		gameState.hot_seats.push(data);
+		gameState.answerBoards[data.username] = data.answer
+		gameState.hot_player = gameState.hot_seats[0].username // first player
 		updateGame();
 	})
 
-	socket.on('sendAnswer', function(data){
-		gameState.answerBoards[data.username] = data.answer
-		updateGame();
-	})
-	
-	socket.on('putAllToQueue', function(data){
-		soundDing()
-		gameState.answerBoards[data.username] = data.answer
-		// TODO: use iteration and use addToHotseats
-		for(var i=0;i<gameState.players.length;i++){
-			addToHotseats(gameState.players[i]);
-		}
-		updateGame();
-	})
+
+
 })
 
 
@@ -274,10 +219,5 @@ io.sockets.on('connection', function (socket) {
 
 
 
-////////////////STUB/////////////////////////////////////////////////////
-var startCountdownTimer = function(startSec,callback){
-
-}
- 
 console.log("Listening on port " + port);
 

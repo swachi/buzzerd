@@ -48,7 +48,7 @@ function AppCtrl($scope){
 
 	$scope.rapid = function(data){
 		socket.emit("addPoints",data);
-		// socket.emit("resetAnswers",{});
+		socket.emit("resetAnswers",{});
 	};
 
 
@@ -56,18 +56,12 @@ function AppCtrl($scope){
 		socket.emit("resetGame", {});
 	};
 
-	$scope.sendPoints = function(data){
-		socket.emit("setPoints",data)
-	}
-
-	$scope.putAllToQueue = function(){
-		socket.emit("putAllToQueue",{})
-	}
 
 
 
 
 }
+
 
 
 

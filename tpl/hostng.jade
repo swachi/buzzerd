@@ -8,29 +8,7 @@ html(ng-app)
 			H1 Host Controller
 			
 			div(id='phase_input' class="col-md-12" class="panel panel-default")
-				div(class='btn-group')
-					H3 Round {{gameState.round}}
-					button(ng-repeat="round in gameState.rounds" 
-						type="button" 
-						class="btn btn-default" 
-						ng-value="round"
-						ng-click="changeRound(round)") {{round}}
-				p
-					form
-						div(class="col-md-12" class='form-horizontal')
-							div(class='form-group')
-								label(class="label label-success") Reward: 
-								input(
-									ng-change="sendPoints({penalty:penalty,reward:reward})"
-									type='number',size=1, ng-model='reward' integer
-									)
-								label(class="label label-danger") Penalty: 
-								input(
-									ng-change="sendPoints({penalty:penalty,reward:reward})"
-									type='number',size=1, ng-model='penalty' integer
-									)
 
-				p
 				H3 Current Phase: {{gameState.phase}}
 
 				div(class='btn-group')
@@ -41,79 +19,74 @@ html(ng-app)
 						ng-click="changePhase(phase)") {{phase}}
 				p
 				div
-					p
+					button(
+						class='btn btn-danger'
+						ng-show="gameState.phase == gameState.phaseOpt.LOCK"  
+						ng-click="resetAnswers()") ResetAnswers
 					button(
 						class='btn btn-success' 
 						ng-show="gameState.phase == gameState.phaseOpt.TIMED" 
-						ng-click="startTimer()"
-						) StartTimer
-					p
-
-						button(
-							class='btn btn-primary'
-							ng-show="gameState.phase == gameState.phaseOpt.SHOW"  
-							ng-click="putAllToQueue()"
-							) AllToQueue
-
+						ng-click="startTimer()") StartTimer
 					button(
 						class='btn btn-danger' 
-						ng-show="gameState.phase == gameState.phaseOpt.RAPID || gameState.phase == gameState.phaseOpt.SHOW" 
-						ng-click="rapid({player:{username:gameState.hot_alive[0]}, points:gameState.points.penalty, reward:false})"
-						) Punish
+						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
+						ng-click="rapid({player:{username:gameState.hot_player}, points:-10})") Punish
 
 					button(
 						class='btn btn-success'
-						ng-show="gameState.phase == gameState.phaseOpt.RAPID || gameState.phase == gameState.phaseOpt.SHOW"  
-						ng-click="rapid({player:{username:gameState.hot_alive[0]}, points:gameState.points.reward, reward:true})"
-						) Reward
-					p
-					button(
-						class='btn btn-warning' 
-						ng-show="gameState.phase == gameState.phaseOpt.RAPID" 
-						ng-click="resetAnswers()"
-						) NextQueue
+						ng-show="gameState.phase == gameState.phaseOpt.RAPID"  
+						ng-click="rapid({player:{username:gameState.hot_player}, points:20})") Reward
 					
 
-					button(
-						class='btn btn-warning'
-						ng-show="gameState.phase == gameState.phaseOpt.SHOW"  
-						ng-click="resetAnswers()"
-						) ResetAnswers
-				div 
-				p
 
-				
-			H3 Hot Seat: {{gameState.hot_alive[0]}}
-			button(ng-repeat="hot_seat in gameState.hot_seats" 
+				div 
+
+
+				p
+				div(class='btn-group')
+					H3 Round {{gameState.round}}
+					button(ng-repeat="round in gameState.rounds" 
+						type="button" 
+						class="btn btn-default" 
+						ng-value="round"
+						ng-click="changeRound(round)") {{round}}
+
+
+				p
+				div(class='btn-group')
+					H3 Hot Seat: {{gameState.hot_player}}
+					button(ng-repeat="hot_seat in gameState.hot_seats" 
 						type="button" 
 						class="btn btn-default" 
 						ng-value="hot_seat"
-						ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
+						ng-click="changeHotseat({hot_player:hot_seat.username})") {{hot_seat.username}}
 					button(ng-click="changeHotseat('')" class="btn btn-good") NoOne
 				p
-			button(ng-repeat="hot_seat in gameState.hot_alive" 
-						type="button" 
-						class="btn btn-default" 
-						ng-value="hot_seat"
-						ng-click="changeHotseat({hot_player:hot_seat})") {{hot_seat}}
+
+			div(class="col-md-12")
+				H3 Hot Seat
+				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
+					div(class='panel-body-sm' ng-show="player.username == gameState.hot_player")
+						H5 Team: {{player.username}} 
+						H5 Members: {{player.members}}
 
 
+						div(class='well well-default')
+							p Score: {{ gameState.scores[player.username] }}
 
-
-
+							div(class='btn-group')
+								button(ng-repeat="score in gameState.score_buttons"
+									ng-click="addPoints({player:player, points:score})"
+									type="button"
+									class="btn btn-default"
+									ng-value='score') {{score}}
 			p
 			div(class="col-md-12")
 				div(ng-repeat="player in gameState.players" class="col-md-5" class="panel panel-default")
 					div(class='panel-body-sm')
-						H1 
-							label(class="label label-warning" ng-show="player.username == gameState.hot_alive[0]") HOT SEAT
-						
 						H5 Team: {{player.username}} 
 						H5 Members: {{player.members}}
-						p 
-						H4 Answer: 
-						H2 {{gameState.answerBoards[player.username]}}
-						p
+
 
 						div(class='well well-default')
 							p Score: {{ gameState.scores[player.username] }}
@@ -138,7 +111,6 @@ html(ng-app)
 				p phase {{gameState.phase}}
 				p players {{gameState.players}}
 				p clientPlayerDict {{gameState.clientPlayerDict}}
-				p answerboards  {{gameState.answerBoards}}
 				p gamestate {{gameState}}
 			button(class="btn btn-danger" ng-click="resetGame()" type="button" ) reset game
 		script(src='http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js')
@@ -149,5 +121,6 @@ html(ng-app)
 		script(src='/js/filters.js')
 		script(src='/js/directives.js')
 		script(src='/hostng.js')
+
 
 

@@ -24,12 +24,6 @@ function AppCtrl($scope){
     	socket.emit("buzzer", data)
     }
 
-    $scope.sendAnswer = function(data){
-    	socket.emit("sendAnswer", data)
-    }
-
-
-
 	socket.on('message', function(e){
 		console.log(e)
 		$scope.messages.push(e);
@@ -42,14 +36,4 @@ function AppCtrl($scope){
 		$scope.gameState = e
 		$scope.$apply();
 	});
-
-
-
-	
-	socket.on('clearPlayerAnswers', function(data){
-		$scope.playerAnswer = null;
-		$scope.$apply();
-		log("clear?")
-	});
-
 }

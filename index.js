@@ -13,9 +13,7 @@ app.use(express.static(__dirname+"/public"))
 
 //////////////////////////////////////////////////////////
 app.get("/", function(req, res){res.render("playerng")});
-
 app.get("/board", function(req, res) {res.render("board")});
-// app.get("/player", function(req, res){res.render("player");});
 app.get("/host", function(req, res){res.render("hostng");});
 app.get("/admin", function(req, res){res.render("admin");});
 
@@ -67,24 +65,21 @@ resetGame();
 
 var io = require('socket.io').listen(app.listen(port));
 
-
 var updateGame = function(){
 	io.sockets.emit('gameState',  gameState);
 }
+// watch for some change in the game state
 watch(gameState, function(){
 	log("some attribute changed!")
 	updateGame();
 		
 });
-
+// watch for some change in player state
 watch(gameState, "players", function(){
 	log("players attribute changed!!")
 	updateGame();
 	
 })
-
-
-
 
 var ioResponseRegistry = {}
 

@@ -17,6 +17,13 @@ window.onload = function(){
 
 	playerMode = REGISTER
 
+	/*
+	modes dictate what interface is shown on the player page
+
+	register
+	team name and members are entered by players, register button sends
+	"register" message to the server.
+	*/
 	modes = {
 		REGISTER:{
 			value:"REGISTER",
@@ -100,10 +107,4 @@ window.onload = function(){
 
 $(document).ready(function() {
 
-
-	// $("#field").keyup(function(e){
-	// 	if(e.keyCode==13) {
-	// 		sendMessage();
-	// 	}
-	// });
 });
